@@ -126,30 +126,7 @@ However, there are some potential disadvantages of using B-Trees:
 2. **Complexity**: The self-balancing mechanism used in B-Trees can be complex to implement, especially for large databases.
 
 In summary, B-Trees offer a balance between search time, space efficiency, and ordered data retrieval, making them an attractive option for database systems where performance is critical.",6.5
-500,50,sentence-transformers/all-MiniLM-L6-v2,FAISS,mistral:latest,1.030964136,135.453125,0.14,6.85,What are the differences between Binary Search and Linear Search?," Binary Search and Linear Search are two common search algorithms used to find specific elements in a list or array. Here are their main differences:
-
-1. Efficiency: Binary Search is more efficient than Linear Search when searching large datasets because it performs logarithmically (O(log n)) compared to the linear time (O(n)) of Linear Search. This means that binary search reduces the number of comparisons needed as the size of the data increases.
-
-2. Requirements: Binary Search requires a sorted list, while Linear Search does not have such requirements.
-
-3. Algorithm: In Binary Search, the middle element of the array is repeatedly compared to the target value until it's found or it can be determined that the target is not present. If the target is less than the middle element, then only the lower half of the array will be searched in the next step. If the target is greater than the middle element, then only the upper half of the array will be considered. In Linear Search, every element in the list is compared to the target one by one, starting from the first element, until the target is found or the end of the list is reached.
-
-4. Complexity Analysis: When the data is already sorted, it's faster to search for an item using Binary Search than Linear Search because binary search reduces the number of comparisons needed as the size of the data increases. However, sorting the data before performing a binary search has its own time and space complexity considerations that should be taken into account.","What is the purpose of indexing in a database, and how does it improve search performance?"," Indexing in a database serves two primary purposes: to speed up data retrieval operations and to enhance the efficiency of the database system.
-
-In simple terms, an index is a data structure that improves the speed of read-only operations at the cost of write operations. It does this by providing a quick reference for database queries to find and retrieve specific data without having to scan every single record in the table, which can be particularly useful when dealing with large datasets.
-
-The improvement in search performance occurs because instead of scanning through the entire table each time a query is executed (which would require time proportional to the total number of rows), the database can first refer to the index to narrow down the search area. This allows for faster access and retrieval of data, reducing the overall time complexity from O(n) to O(log n).
-
-However, it's important to note that while indexing improves read operations, it may slightly increase the time required for write operations since each insertion, update, or deletion needs to be reflected in both the table and its corresponding index. As a result, databases use strategies like delayed index creation to balance the performance between reading and writing.",Explain the structure and advantages of B-Trees in database systems.," B-Trees are a type of self-balancing search tree data structure used in database systems to efficiently store and retrieve sorted data. They are useful for maintaining large ordered sets from disk, as they reduce the number of disk accesses required by applications that search, insert, delete, or enforce range queries on such data.
-
-The basic structure of a B-Tree consists of nodes, where each node can have multiple children (usually between M and 2M-1). The root node is never empty unless it contains only the root of a one-node tree. Non-leaf nodes contain keys and pointers to their child nodes, while leaf nodes contain only keys and pointers to data records stored outside the tree.
-
-One of the main advantages of B-Trees is that they can be used in databases to manage large amounts of data efficiently. Since B-Trees allow for range queries (retrieving all keys between a range), they are highly suitable for indexing data and can significantly speed up data retrieval operations, reducing disk I/O accesses and improving overall database performance.
-
-Another advantage is that B-Trees have good balance properties. Balance in a tree means that the number of nodes at each level is roughly equal. This property ensures that search, insertion, and deletion operations take logarithmic time in the size of the data set, which is a significant efficiency improvement compared to linear search algorithms.
-
-Lastly, B-Trees can be easily extended to work with multi-dimensional keys (B+Tree) or to handle data streaming (B*-tree). These variants address specific needs and optimization requirements of real-world database systems.",9
-500,50,sentence-transformers/all-MiniLM-L6-v2,FAISS,llama3.2:latest,1.200875044,136.546875,0.08,0.8,What are the differences between Binary Search and Linear Search?,"Binary Search and Linear Search are two fundamental algorithms used for searching elements in a sorted list. Here are the main differences between them:
+500,50,sentence-transformers/all-MiniLM-L6-v2,FAISS,mistral:latest,1.030964136,135.453125,0.14,6.85,What are the differences between Binary Search and Linear Search?,"Binary Search and Linear Search are two fundamental algorithms used for searching elements in a sorted list. Here are the main differences between them:
 
 1. **Time Complexity**:
 	* Linear Search has a time complexity of O(n), where n is the number of elements in the list. This means that the search time increases linearly with the size of the list.
@@ -199,6 +176,29 @@ Advantages:
 5. **Self-Optimization**: The self-balancing property allows the B-Tree to adapt to changes in the data structure, maintaining optimal performance.
 
 In summary, B-Trees are an effective choice for database systems due to their efficient search capabilities, balanced structure, and space efficiency.",7.5
+500,50,sentence-transformers/all-MiniLM-L6-v2,FAISS,llama3.2:latest,1.200875044,136.546875,0.08,0.8,What are the differences between Binary Search and Linear Search?," Binary Search and Linear Search are two common search algorithms used to find specific elements in a list or array. Here are their main differences:
+
+1. Efficiency: Binary Search is more efficient than Linear Search when searching large datasets because it performs logarithmically (O(log n)) compared to the linear time (O(n)) of Linear Search. This means that binary search reduces the number of comparisons needed as the size of the data increases.
+
+2. Requirements: Binary Search requires a sorted list, while Linear Search does not have such requirements.
+
+3. Algorithm: In Binary Search, the middle element of the array is repeatedly compared to the target value until it's found or it can be determined that the target is not present. If the target is less than the middle element, then only the lower half of the array will be searched in the next step. If the target is greater than the middle element, then only the upper half of the array will be considered. In Linear Search, every element in the list is compared to the target one by one, starting from the first element, until the target is found or the end of the list is reached.
+
+4. Complexity Analysis: When the data is already sorted, it's faster to search for an item using Binary Search than Linear Search because binary search reduces the number of comparisons needed as the size of the data increases. However, sorting the data before performing a binary search has its own time and space complexity considerations that should be taken into account.","What is the purpose of indexing in a database, and how does it improve search performance?"," Indexing in a database serves two primary purposes: to speed up data retrieval operations and to enhance the efficiency of the database system.
+
+In simple terms, an index is a data structure that improves the speed of read-only operations at the cost of write operations. It does this by providing a quick reference for database queries to find and retrieve specific data without having to scan every single record in the table, which can be particularly useful when dealing with large datasets.
+
+The improvement in search performance occurs because instead of scanning through the entire table each time a query is executed (which would require time proportional to the total number of rows), the database can first refer to the index to narrow down the search area. This allows for faster access and retrieval of data, reducing the overall time complexity from O(n) to O(log n).
+
+However, it's important to note that while indexing improves read operations, it may slightly increase the time required for write operations since each insertion, update, or deletion needs to be reflected in both the table and its corresponding index. As a result, databases use strategies like delayed index creation to balance the performance between reading and writing.",Explain the structure and advantages of B-Trees in database systems.," B-Trees are a type of self-balancing search tree data structure used in database systems to efficiently store and retrieve sorted data. They are useful for maintaining large ordered sets from disk, as they reduce the number of disk accesses required by applications that search, insert, delete, or enforce range queries on such data.
+
+The basic structure of a B-Tree consists of nodes, where each node can have multiple children (usually between M and 2M-1). The root node is never empty unless it contains only the root of a one-node tree. Non-leaf nodes contain keys and pointers to their child nodes, while leaf nodes contain only keys and pointers to data records stored outside the tree.
+
+One of the main advantages of B-Trees is that they can be used in databases to manage large amounts of data efficiently. Since B-Trees allow for range queries (retrieving all keys between a range), they are highly suitable for indexing data and can significantly speed up data retrieval operations, reducing disk I/O accesses and improving overall database performance.
+
+Another advantage is that B-Trees have good balance properties. Balance in a tree means that the number of nodes at each level is roughly equal. This property ensures that search, insertion, and deletion operations take logarithmic time in the size of the data set, which is a significant efficiency improvement compared to linear search algorithms.
+
+Lastly, B-Trees can be easily extended to work with multi-dimensional keys (B+Tree) or to handle data streaming (B*-tree). These variants address specific needs and optimization requirements of real-world database systems.",9
 200,100,sentence-transformers/all-MiniLM-L6-v2,FAISS,llama3.2:latest,3.280826807,425.46875,0.04,0.55,What are the differences between Binary Search and Linear Search?,"When it comes to searching for an element in a sorted list of items, two fundamental algorithms come into play: Binary Search and Linear Search.
 
 Here are the main differences between them:

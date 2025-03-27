@@ -112,57 +112,7 @@ However, B-Trees also have some disadvantages, such as:
 2. **Memory Requirements**: While B-Trees are space-efficient, they still require significant memory to store the tree structure and keys.
 
 Overall, B-Trees are an effective choice for managing large amounts of data in database systems due to their efficient search, insertion, and deletion capabilities, as well as their ability to balance the tree and manage disk storage.",7
-500,50,sentence-transformers/all-MiniLM-L6-v2,FAISS,mistral:latest,1.011088848,79.25,0.14,4.21,What are the differences between Binary Search and Linear Search?," Binary Search and Linear Search are two common search algorithms used in computer science. Here are their key differences:
-
-1. Efficiency: Binary Search is more efficient than Linear Search. Binary Search has an average time complexity of O(log n), while Linear Search has a time complexity of O(n). This means that as the size of the data set grows, Binary Search will execute faster than Linear Search.
-
-2. Applicability: Binary Search is applicable only on sorted data sets, whereas Linear Search can be applied to both sorted and unsorted data sets.
-
-3. Implementation: In Binary Search, we repeatedly divide the search interval in half until we find the target element or we can confirm that the target does not exist. On the other hand, in Linear Search, we look for the target element by checking each item in sequence until we find it or run out of items to check.
-
-4. Example Implementations: Here is a simplified example implementation of both algorithms in pseudocode:
-
-   **Linear Search:**
-   ```
-   function linearSearch(array, target):
-       for i in range(0, len(array)):
-           if array[i] == target:
-               return i
-       return -1 // target not found
-   ```
-
-   **Binary Search:**
-   ```
-   function binarySearch(array, target):
-       low = 0
-       high = len(array) - 1
-
-       while low <= high:
-           mid = (low + high) // 2
-
-           if array[mid] == target:
-               return mid
-           elif array[mid] < target:
-               low = mid + 1
-           else:
-               high = mid - 1
-
-       return -1 // target not found
-   ```","What is the purpose of indexing in a database, and how does it improve search performance?"," Indexing in a database serves to speed up data retrieval operations. It's essentially a way to organize the data within a table in such a manner that the database can quickly find and retrieve specific pieces of data without having to scan every row, which is particularly useful when dealing with large amounts of data.
-
-The improvement in search performance comes from the fact that indexes allow the database to skip over many rows it knows don't match the search criteria, as opposed to scanning each row one by one without an index. This makes searches faster and more efficient. However, it's important to note that while indexing can improve read operations, it can slow down write operations due to the time required to update the index along with the data.",Explain the structure and advantages of B-Trees in database systems.," B-Trees are self-balancing search trees that are commonly used to store sorted data in a database system. They are highly efficient for handling large amounts of data, supporting fast insertions, deletions, and searches. Here's a simplified explanation of their structure and advantages:
-
-1. **Structure**: A B-Tree has a fixed number 'm' of children at each non-leaf node, and an arbitrary number (at least one) of keys and children at each leaf node. The root node can have zero to 'm' children. All inner nodes (non-leaf nodes) store the range of data that is stored in the subtree rooted at that node. Leaf nodes contain the data itself, rather than just pointers to the data.
-
-2. **Advantages**:
-   - **Fast Search**: Because B-Trees are self-balancing and organized in a way that minimizes the number of comparisons needed for a search, they can perform searches much faster than other types of trees, like AVL Trees or Red-Black Trees.
-
-   - **Efficient Use of Space**: By allowing each inner node to store multiple keys, B-Trees make efficient use of space. This reduces the number of nodes in the tree, which can lead to faster operations and less memory usage.
-
-   - **Fast Insertions and Deletions**: Because of their balanced nature, insertions and deletions in a B-Tree don't require reorganizing large parts of the tree, unlike AVL Trees or Red-Black Trees. This makes them efficient for handling dynamic data sets.
-
-   - **Scalability**: B-Trees can handle very large numbers of elements. Because they are designed to store and retrieve large amounts of data efficiently, they are often used in database systems and file systems.",8
-500,50,sentence-transformers/all-MiniLM-L6-v2,FAISS,llama3.2:latest,1.246877193,122.390625,0.08,1.34,What are the differences between Binary Search and Linear Search?,"Binary Search and Linear Search are two fundamental algorithms used for searching data in a sorted list.
+500,50,sentence-transformers/all-MiniLM-L6-v2,FAISS,mistral:latest,1.011088848,79.25,0.14,4.21,What are the differences between Binary Search and Linear Search?,"Binary Search and Linear Search are two fundamental algorithms used for searching data in a sorted list.
 
 Here are the main differences between them:
 
@@ -223,6 +173,56 @@ Some key properties of B-Trees include:
 * When a node becomes empty, it merges with its sibling node if possible.
 
 Overall, B-Trees provide a robust and efficient way to store and manage data in database systems.",7.5
+500,50,sentence-transformers/all-MiniLM-L6-v2,FAISS,llama3.2:latest,1.246877193,122.390625,0.08,1.34,What are the differences between Binary Search and Linear Search?," Binary Search and Linear Search are two common search algorithms used in computer science. Here are their key differences:
+
+1. Efficiency: Binary Search is more efficient than Linear Search. Binary Search has an average time complexity of O(log n), while Linear Search has a time complexity of O(n). This means that as the size of the data set grows, Binary Search will execute faster than Linear Search.
+
+2. Applicability: Binary Search is applicable only on sorted data sets, whereas Linear Search can be applied to both sorted and unsorted data sets.
+
+3. Implementation: In Binary Search, we repeatedly divide the search interval in half until we find the target element or we can confirm that the target does not exist. On the other hand, in Linear Search, we look for the target element by checking each item in sequence until we find it or run out of items to check.
+
+4. Example Implementations: Here is a simplified example implementation of both algorithms in pseudocode:
+
+   **Linear Search:**
+   ```
+   function linearSearch(array, target):
+       for i in range(0, len(array)):
+           if array[i] == target:
+               return i
+       return -1 // target not found
+   ```
+
+   **Binary Search:**
+   ```
+   function binarySearch(array, target):
+       low = 0
+       high = len(array) - 1
+
+       while low <= high:
+           mid = (low + high) // 2
+
+           if array[mid] == target:
+               return mid
+           elif array[mid] < target:
+               low = mid + 1
+           else:
+               high = mid - 1
+
+       return -1 // target not found
+   ```","What is the purpose of indexing in a database, and how does it improve search performance?"," Indexing in a database serves to speed up data retrieval operations. It's essentially a way to organize the data within a table in such a manner that the database can quickly find and retrieve specific pieces of data without having to scan every row, which is particularly useful when dealing with large amounts of data.
+
+The improvement in search performance comes from the fact that indexes allow the database to skip over many rows it knows don't match the search criteria, as opposed to scanning each row one by one without an index. This makes searches faster and more efficient. However, it's important to note that while indexing can improve read operations, it can slow down write operations due to the time required to update the index along with the data.",Explain the structure and advantages of B-Trees in database systems.," B-Trees are self-balancing search trees that are commonly used to store sorted data in a database system. They are highly efficient for handling large amounts of data, supporting fast insertions, deletions, and searches. Here's a simplified explanation of their structure and advantages:
+
+1. **Structure**: A B-Tree has a fixed number 'm' of children at each non-leaf node, and an arbitrary number (at least one) of keys and children at each leaf node. The root node can have zero to 'm' children. All inner nodes (non-leaf nodes) store the range of data that is stored in the subtree rooted at that node. Leaf nodes contain the data itself, rather than just pointers to the data.
+
+2. **Advantages**:
+   - **Fast Search**: Because B-Trees are self-balancing and organized in a way that minimizes the number of comparisons needed for a search, they can perform searches much faster than other types of trees, like AVL Trees or Red-Black Trees.
+
+   - **Efficient Use of Space**: By allowing each inner node to store multiple keys, B-Trees make efficient use of space. This reduces the number of nodes in the tree, which can lead to faster operations and less memory usage.
+
+   - **Fast Insertions and Deletions**: Because of their balanced nature, insertions and deletions in a B-Tree don't require reorganizing large parts of the tree, unlike AVL Trees or Red-Black Trees. This makes them efficient for handling dynamic data sets.
+
+   - **Scalability**: B-Trees can handle very large numbers of elements. Because they are designed to store and retrieve large amounts of data efficiently, they are often used in database systems and file systems.",8
 200,100,sentence-transformers/all-MiniLM-L6-v2,FAISS,llama3.2:latest,3.316836834,422.8125,0.04,0.19,What are the differences between Binary Search and Linear Search?,"Binary Search and Linear Search are two fundamental algorithms used for searching elements in a sorted array or list.
 
 The main difference between them is:

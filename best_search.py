@@ -57,7 +57,7 @@ def generate_rag_response(query: str, context_results: list) -> str:
     """
     Generates a response using Retrieval-Augmented Generation (RAG).
     
-    Constructs a prompt that includes the retrieved context and calls the local LLM (mistral:latest via Ollama)
+    Constructs a prompt that includes the retrieved context and calls the local LLM (llama3.2:latest via Ollama)
     to generate a detailed answer.
     """
     context_str = "\n".join([
@@ -76,7 +76,7 @@ User query:
 
 Answer:
 """
-    response = ollama.chat(model="mistral:latest", messages=[{"role": "user", "content": prompt}])
+    response = ollama.chat(model="llama3.2:latest", messages=[{"role": "user", "content": prompt}])
     return response["message"]["content"]
 
 def interactive_search():

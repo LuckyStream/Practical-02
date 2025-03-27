@@ -64,8 +64,47 @@ To run the full experiment and generate the results CSV:
 ```bash
 python test_pipeline.py
 ```
+To select the five pipelines with the best comprehensive levels from the 162 pipelines for a more rigorous comparison.
+
+```bash
+python Top5_pipelines.py
+```
+
+## Best Pipeline Scripts
+
+These scripts use the best pipeline configuration we selected above:
+
+### `best_ingest.py`
+
+```bash
+python best_ingest.py
+```
+
+- Ingests and indexes the documents using the best-performing pipeline:
+  - Chunk Size: 500
+  - Overlap: 50 
+  - Embedding Model: `sentence-transformers/all-MiniLM-L6-v2`
+  - Vector DB: `FAISS`
+  - LLM: `llama3.2:latest`
+- Must be run **once** to set up the vector store before querying.
+
+### `best_search.py`
+
+```bash
+python best_search.py
+```
+- Launches an interactive search interface using the best pipeline setup.
+- After running, you can input a query to get a response from the local LLM.
+- Type **exit** to quit the search loop.
+
 
 ## Team
 
 Li Zou
+
+Yining Tao
+
+Yueru Gong
+
+Sijie Dai
 

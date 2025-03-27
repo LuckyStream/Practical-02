@@ -1,0 +1,1562 @@
+
+DS 4300 - Foundations
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ Searching
+- Searching is the most common operation performed in a database system.
+- The SELECT statement in SQL is the most versatile and complex.
+- Linear Search (Baseline for Efficiency)
+  - Start at the beginning of a list and proceed element by element until:
+    - The target is found.
+    - The last element is reached without finding the target.
+
+2️⃣ Basic Database Terminology
+- Record: A collection of values for attributes of a single entity instance (a row in a table).
+- Collection: A set of records of the same entity type (a table), typically stored in sequential order.
+- Search Key: A value for an attribute that can be used for searching. It can consist of one or more attributes.
+
+3️⃣ Lists of Records
+- If each record takes x bytes, then for n records, memory required is n × x bytes.
+- Data structures:
+  - Contiguously Allocated List: A single chunk of memory is allocated for all records.
+  - Linked List: Each record has additional space for 1 or 2 memory addresses and is linked together.
+
+4️⃣ Contiguous vs. Linked List - Pros & Cons
+- Arrays:
+  - ✅ Fast for random access.
+  - ❌ Slow for inserting elements anywhere except the end.
+- Linked Lists:
+  - ✅ Fast for inserting anywhere.
+  - ❌ Slow for random access.
+
+5️⃣ Binary Search
+- Input: A sorted array of values and a target value.
+- Output: The index of the target or an indication that it was not found.
+- Algorithm (Python)
+  def binary_search(arr, target):
+      left, right = 0, len(arr) - 1
+      while left <= right:
+          mid = (left + right) // 2
+          if arr[mid] == target:
+              return mid  
+          elif arr[mid] < target:
+              left = mid + 1  
+          else:
+              right = mid - 1
+      return -1
+- Time Complexity:
+  - Linear Search:
+    - Best case: O(1) (first element is the target).
+    - Worst case: O(n) (target is not in the array).
+  - Binary Search:
+    - Best case: O(1) (target found at the midpoint).
+    - Worst case: O(log₂ n) (target not found, logarithmic comparisons).
+
+6️⃣ Searching in Databases
+- If data is stored by column id, searching for an id is fast.
+- Searching for a specialVal requires a linear scan of the column.
+- Issue: Data cannot be simultaneously stored in sorted order by multiple attributes.
+- Solution: Use an external data structure for faster searching.
+
+7️⃣ Possible External Structures
+1. Sorted Array of Tuples (specialVal, rowNumber):
+   - ✅ Can use Binary Search to quickly locate a specialVal.
+   - ❌ Inserting new records is slow (since the array must remain sorted).
+
+2. Linked List of Tuples (specialVal, rowNumber):
+   - ✅ Insertion is fast.
+   - ❌ Searching is slow (requires a linear scan).
+
+8️⃣ Optimal Data Structure for Searching & Insertion
+- Binary Search Tree (BST):
+  - Each node has a left subtree with smaller values and a right subtree with larger values.
+  - ✅ Efficient for both searching and inserting.
+
+
+
+DS 4300 - Binary Search Trees (BST)
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ Binary Search Trees (BST) Definition
+- A binary search tree (BST) is a binary tree that follows the BST-property:
+  - For all nodes x and y:
+    - If y belongs to the left subtree of x, then key(y) < key(x).
+    - If y belongs to the right subtree of x, then key(y) > key(x).
+- Keys in a BST are assumed to be pairwise distinct.
+- Each node has the following attributes:
+  - `p`, `left`, and `right` (pointers to the parent, left child, and right child).
+  - `key` (stores the key value of the node).
+
+2️⃣ BST Traversal
+- Traversal means visiting all nodes in the tree in a specific order.
+- Three traversal strategies:
+  1. **Inorder Traversal:** left subtree → current node → right subtree.
+  2. **Preorder Traversal:** current node → left subtree → right subtree.
+  3. **Postorder Traversal:** left subtree → right subtree → current node.
+
+- **Inorder Traversal Pseudocode:**
+  ```python
+  def inorder_walk(x):
+      if x is None:
+          return
+      inorder_walk(x.left)
+      print(x.key)
+      inorder_walk(x.right)
+  ```
+- Inorder traversal outputs BST keys in **non-decreasing order**.
+
+3️⃣ BST Operations
+1. **Searching for a key**:
+   - Given a key `k` and a subtree rooted at node `x`, search follows:
+     - If `key[x] == k`, return the node.
+     - If `key[x] < k`, search in the right subtree.
+     - If `key[x] > k`, search in the left subtree.
+   - **BST Search Algorithm:**
+     ```python
+     def bst_search(x, k):
+         while x is not None:
+             if x.key == k:
+                 return x
+             elif x.key < k:
+                 x = x.right
+             else:
+                 x = x.left
+         return "NOT FOUND"
+     ```
+
+2. **Finding Minimum and Maximum:**
+   - **Minimum:** Leftmost node (keep following `left` pointers).
+   - **Maximum:** Rightmost node (keep following `right` pointers).
+   - **Algorithms:**
+     ```python
+     def bst_minimum(x):
+         while x.left is not None:
+             x = x.left
+         return x.key
+
+     def bst_maximum(x):
+         while x.right is not None:
+             x = x.right
+         return x.key
+     ```
+
+3. **Insertion into a BST:**
+   - Find the correct position for a new node `z` with key `k`.
+   - Insert `z` without violating the BST-property.
+   - **Algorithm:**
+     ```python
+     def bst_insert(root, z):
+         y = None
+         x = root
+         while x is not None:
+             y = x
+             if z.key < x.key:
+                 x = x.left
+             else:
+                 x = x.right
+         if y is None:
+             root = z
+         elif z.key < y.key:
+             y.left = z
+         else:
+             y.right = z
+     ```
+
+4. **Finding Successor and Predecessor:**
+   - **Successor:** Smallest key greater than `k`.
+     - If `x` has a right subtree → Find **minimum** in right subtree.
+     - Else → Traverse up until `x` is in a left subtree.
+   - **Predecessor:** Largest key smaller than `k`.
+     - Mirror approach of successor.
+
+   - **Successor Algorithm:**
+     ```python
+     def bst_successor(x):
+         if x.right is not None:
+             return bst_minimum(x.right)
+         y = x.parent
+         while y is not None and x == y.right:
+             x = y
+             y = y.parent
+         return y
+     ```
+
+5. **Deletion from a BST:**
+   - Case 1: Node `z` has **no children** → Replace `z` with `nil`.
+   - Case 2: Node `z` has **one child** → Promote its child.
+   - Case 3: Node `z` has **two children** → Replace `z` with its **successor**.
+   - **BST Delete Algorithm:**
+     ```python
+     def bst_delete(root, z):
+         if z.left is None:
+             transplant(root, z, z.right)
+         elif z.right is None:
+             transplant(root, z, z.left)
+         else:
+             y = bst_minimum(z.right)
+             if y.parent != z:
+                 transplant(root, y, y.right)
+                 y.right = z.right
+                 y.right.parent = y
+             transplant(root, z, y)
+             y.left = z.left
+             y.left.parent = y
+     ```
+
+6. **Efficiency Analysis of BST Operations**
+   - **Theorem:** On a BST of height **h**, the following operations run in **O(h) time**:
+     - Search, Minimum, Maximum, Successor, Predecessor, Insert, Delete.
+   - **Average Case:** If the BST is balanced, `h = O(log n)`.
+   - **Worst Case:** If the BST is a linked list (unbalanced), `h = O(n)`.
+
+7. **Height of a Randomly Built BST**
+   - On average, the height of a BST built with `n` distinct keys is `O(log n)`.
+   - Analysis involves Jensen’s inequality and expectation bounds.
+
+
+DS 4300 - AVL Trees
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ Importance of Binary Search Tree (BST) Balancing
+- The performance of BSTs depends on their shape, which affects their height.
+- **Perfect BST:** Height is minimal, leading to optimal performance.
+- **Degenerate BST:** Height is maximal, behaving like a linked list.
+- The worst case occurs when keys are inserted in order, leading to O(n) lookup time.
+
+2️⃣ Problems with Degenerate BSTs
+- **Lookup Time Complexity:** O(n) in the worst case (similar to linked lists).
+- **Recursive Lookups:** May consume O(n) memory due to deep recursion.
+- **Tree Construction Cost:** Inserting n keys in order takes Θ(n²) operations.
+- **Solution:** Maintain a balanced tree structure to ensure logarithmic height.
+
+3️⃣ Perfect vs. Complete Binary Trees
+- **Perfect Binary Tree:** A BST where every level is completely filled.
+- **Complete Binary Tree:** A BST where:
+  - All levels are filled except the last.
+  - Nodes in the last level are as far left as possible.
+- Complete binary trees maintain a height of **Θ(log n)**.
+
+4️⃣ Challenges in Maintaining Balance
+- **Maintaining a perfect BST is impossible** for arbitrary numbers of keys.
+- **Maintaining a complete BST requires O(n) operations** in the worst case, making it impractical.
+- Instead, we define a **"good enough"** balance condition.
+
+5️⃣ Defining a "Good" Balance Condition
+- **Goals:**
+  1. Ensure BST height remains **Θ(log n)**.
+  2. Keep re-balancing operations **O(log n)** to prevent overhead.
+- **Tradeoff:** Perfect balance is too expensive, so we seek **"nearly balanced"** solutions.
+
+6️⃣ AVL Trees: A Compromise for Balance
+- **AVL Tree Definition:** A BST where every node satisfies the **AVL property**:
+  - The height difference between the left and right subtrees is at most **1**.
+- **Key Features:**
+  - AVL trees remain **balanced after every operation** (insertion or deletion).
+  - They allow logarithmic **lookup, insertion, and deletion time**.
+
+7️⃣ AVL Tree Rotations (Rebalancing)
+- **Rotations restore AVL property after insertions or deletions.**
+- **Types of Rotations:**
+  1. **LL Rotation (Left-Left)**: Right rotation is performed.
+  2. **RR Rotation (Right-Right)**: Left rotation is performed.
+  3. **LR Rotation (Left-Right)**: Left rotation followed by right rotation.
+  4. **RL Rotation (Right-Left)**: Right rotation followed by left rotation.
+
+8️⃣ AVL Tree Insertion
+- **Steps for insertion:**
+  1. Perform **regular BST insertion**.
+  2. Traverse back up to detect imbalances.
+  3. Apply **appropriate rotation** (LL, RR, LR, or RL).
+- **Example:** If inserting a node causes an imbalance at a parent node:
+  - Identify whether LL, RR, LR, or RL rotation is needed.
+  - Apply the rotation to restore balance.
+
+9️⃣ AVL Tree Deletion
+- **Steps for deletion:**
+  1. Perform **regular BST deletion**.
+  2. Traverse back up and detect imbalances.
+  3. **Multiple rotations** may be required to restore balance.
+  4. Each rotation takes O(1) time, but in the worst case, O(log n) rotations may be needed.
+
+🔟 AVL Tree Height Analysis
+- **Key Question:** What is the height of an AVL tree with **n** nodes?
+- **Derivation:**
+  - The minimum number of nodes in an AVL tree of height **h** follows:
+    ```
+    M(h) = 1 + M(h - 1) + M(h - 2)
+    ```
+  - This recurrence leads to:
+    ```
+    M(h) ≥ 2^(h/2)  →  h ≤ 2 log₂(n)
+    ```
+  - **Result:** AVL tree height is **Θ(log n)**.
+
+📌 Conclusion:
+- AVL trees achieve **logarithmic height** while keeping rebalancing costs manageable.
+- **Insertions, deletions, and lookups remain O(log n)** in worst cases.
+- AVL trees provide a balance between **performance and efficiency** in BSTs.
+
+
+DS 4300 - B-Trees and B+ Trees
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ Introduction to B-Trees
+- **B-Trees** were introduced by **R. Bayer and E. McCreight** in 1972 and became the standard for large-file access.
+- Used extensively in **file systems** and **databases** for efficient insertion, deletion, and range queries.
+- **Advantages of B-Trees:**
+  - Always **height-balanced**, keeping **all leaf nodes at the same level**.
+  - **High branching factor** reduces tree height, minimizing **disk I/O**.
+  - Keeps **related records together** to speed up **range queries**.
+  - Guarantees that nodes remain at least **partially full**, optimizing space usage.
+
+2️⃣ Structure of a B-Tree (Order m)
+- The **root** is either a **leaf** or has at least **two children**.
+- **Internal nodes (except root)** have between **⌈m/2⌉ and m children**.
+- **All leaves are at the same level**, ensuring height balance.
+- **2-3 Trees** are a special case of **B-Trees with order 3**.
+- **Typical B-Tree nodes hold 100+ children**, making them highly efficient for disk storage.
+
+3️⃣ B-Tree Search Algorithm
+- **Process:**
+  1. Perform a **binary search** within the current node.
+  2. If the key is found, return the record.
+  3. If not, follow the appropriate child pointer and repeat the process.
+  4. If the key is not found in a leaf, return **"not found"**.
+
+- **Example:** Searching for key `47`:
+  - Check the **root** node.
+  - Follow the correct **branch** based on key comparison.
+  - Continue the search at the leaf node where **47 is stored**.
+
+4️⃣ B-Tree Insertion Algorithm
+- **Steps:**
+  1. Locate the appropriate **leaf node**.
+  2. If there is room, insert the key directly.
+  3. If the node is **full**, split it:
+     - Promote the **middle key** to the parent node.
+     - Distribute remaining keys evenly between **two new nodes**.
+  4. If the parent node **overflows**, recursively apply the **split operation** up to the root.
+
+- **Result:** The B-Tree remains balanced, with all leaves at the same depth.
+
+5️⃣ B+ Trees: An Optimized B-Tree Variant
+- **B+ Trees** are an improved version of **B-Trees**, commonly used in **databases and file systems**.
+- **Key Differences from B-Trees:**
+  - **Internal nodes store only keys** (used for navigation, not actual data).
+  - **All actual records are stored at leaf nodes**.
+  - **Leaf nodes are linked in a doubly linked list**, enabling efficient **range queries**.
+
+6️⃣ B+ Tree Search Algorithm
+- **Steps:**
+  1. Start at the **root** and perform **binary search** within the node.
+  2. Follow the **correct pointer** to the next level.
+  3. Continue until reaching the **leaf node**.
+  4. If the key is found in the **leaf node**, return the record.
+
+- **Key Difference:** Even if a key is found in an internal node, the search **must continue** to the leaf level.
+
+7️⃣ B+ Tree Insertion Algorithm
+- **Steps:**
+  1. Find the correct **leaf node** for insertion.
+  2. If there is space, insert the key.
+  3. If the node is **full**, split it into **two leaf nodes** and **promote** the middle key.
+  4. If the parent node becomes full, **split it recursively**, potentially growing the tree height.
+
+- **Effect:** The tree remains balanced, and **all leaf nodes stay at the same depth**.
+
+8️⃣ B+ Tree Deletion Algorithm
+- **Steps:**
+  1. Locate the **leaf node** containing the key.
+  2. If the node is more than **half full**, simply remove the key.
+  3. If the node **underflows**, attempt to **borrow a key** from a sibling.
+  4. If borrowing is not possible, **merge the underflowing node** with a sibling.
+  5. If the parent node underflows, apply **recursive merging** up to the root.
+
+- **Effect:** The B+ Tree maintains **50% minimum storage utilization** while preserving balance.
+
+9️⃣ B+ Tree vs. B-Trees: Advantages
+- **B+ Trees excel in range queries** due to their linked leaf nodes.
+- **More efficient disk access:** Internal nodes are smaller and contain only keys, improving **search performance**.
+- **Guaranteed logarithmic operations:** Search, insertion, and deletion all run in **Θ(log n) time**.
+
+🔟 B-Tree and B+ Tree Height Analysis
+- **Key Question:** What is the height of a B+ Tree with **n records**?
+- **Analysis:**
+  - If the tree has **order m**, then the height is approximately **O(logₘ n)**.
+  - **Typical database trees have m ≈ 100**, making the tree extremely **shallow** (height rarely exceeds 4 or 5).
+  - The tree maintains an **average fill factor of ~75%**, optimizing space usage.
+
+📌 Conclusion:
+- **B-Trees and B+ Trees** are the gold standard for **disk-based indexing**.
+- **Shallow depth and high branching factors** minimize disk I/O.
+- **Efficient for search, insert, delete, and range queries**, making them ideal for **large-scale storage systems**.
+
+
+DS 4300 - Advanced B-Trees Concepts
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ Why Use B-Trees?
+- **Traditional BSTs have poor cache locality** because nodes are stored separately, often leading to inefficient memory access.
+- **B-Trees improve locality** by storing multiple elements in each node, reducing cache misses and disk I/O.
+- Originally designed for **disk storage**, but also useful for **in-memory data structures** due to increasing memory latency.
+
+2️⃣ Structure of a B-Tree (Order m)
+- A **B-tree of order m** is a search tree where each non-leaf node has up to **m children**.
+- **Properties:**
+  1. **All paths from root to leaves have the same length** (height-balanced).
+  2. If a node has **n children**, it contains **n-1 keys**.
+  3. **All nodes (except root) are at least half full**.
+  4. Keys in a parent node **separate** values in child nodes.
+  5. **Root has at least two children**, unless it is a leaf.
+
+- **Example:** An order-5 B-tree (m=5) where leaves store up to 3 records.
+
+3️⃣ B-Tree Lookup Algorithm
+- **Steps:**
+  1. Start at the **root node**.
+  2. Perform **binary search** on keys in the node.
+  3. If the key is **found**, return the record.
+  4. If not found, follow the **appropriate child pointer** and repeat the process.
+  5. If reaching a **leaf node without finding the key**, return **"not found"**.
+
+- **Efficiency:** Lookups require **O(logₘ n)** operations due to the high branching factor.
+
+4️⃣ B-Tree Insertion Algorithm
+- **Steps:**
+  1. Find the correct **leaf node** for insertion.
+  2. If space is available, insert the key.
+  3. If the node is **full**, split it:
+     - Divide elements **evenly** into two new nodes.
+     - Promote the **middle key** to the parent node.
+  4. If the parent node **overflows**, recursively **split upwards**.
+  5. If the root splits, create a **new root**, increasing the tree height.
+
+- **Effect:** The B-tree remains balanced, and height grows **slowly**.
+
+5️⃣ B-Tree Deletion Algorithm
+- **Steps:**
+  1. Locate the **leaf node** containing the key.
+  2. Remove the key from the leaf.
+  3. If the leaf node has **enough keys**, no further action is needed.
+  4. If the node **underflows** (falls below the minimum keys required):
+     - **Borrow** a key from a sibling if possible.
+     - If borrowing is not possible, **merge** the node with a sibling.
+  5. If merging causes the parent to underflow, repeat the process **up the tree**.
+  6. If the root has only one child, remove the root and make the child the new root, **reducing tree height**.
+
+- **Effect:** The B-tree remains balanced, and height **may decrease**.
+
+6️⃣ Why B-Trees are Efficient
+- **Height remains low:** B-Trees are **logarithmic** in height, typically requiring **O(logₘ n) operations**.
+- **Optimized for cache & disk:** High **branching factor** reduces the number of memory accesses.
+- **Used in databases & file systems** due to their **fast insert, delete, and search operations**.
+
+📌 Conclusion:
+- B-Trees **maintain balance automatically**, ensuring efficient operations.
+- **Height remains logarithmic**, preventing worst-case O(n) performance.
+- **Used in disk storage and in-memory indexing** for optimal efficiency.
+
+
+DS 4300 - Moving Beyond the Relational Model
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ Benefits of the Relational Model
+- **Standardized Data Model and Query Language (SQL)**
+- **ACID Compliance:**
+  - **Atomicity:** Transactions are fully executed or not at all.
+  - **Consistency:** Transactions transition the database from one valid state to another.
+  - **Isolation:** Transactions do not interfere with each other.
+  - **Durability:** Once committed, transactions remain in the database.
+- **Works well with highly structured data.**
+- **Capable of handling large amounts of data.**
+- **Mature ecosystem with extensive tooling and expertise.**
+
+2️⃣ Relational Database Performance Enhancements
+- **Indexing** (primary focus of DS4300).
+- **Direct control over storage management.**
+- **Row-oriented vs. column-oriented storage.**
+- **Query optimization techniques.**
+- **Caching and prefetching mechanisms.**
+- **Materialized views.**
+- **Precompiled stored procedures.**
+- **Data replication and partitioning strategies.**
+
+3️⃣ Transaction Processing in Relational Databases
+- A **transaction** consists of multiple CRUD operations executed as a **single logical unit**.
+- **Transaction outcomes:**
+  - **Commit:** All operations succeed, making changes permanent.
+  - **Rollback (Abort):** The entire sequence is undone if any part fails.
+- **Ensures:**
+  - Data integrity.
+  - Error recovery.
+  - Concurrency control.
+  - Reliable storage.
+
+4️⃣ ACID Properties Explained
+- **Atomicity:** Transactions are **all or nothing**.
+- **Consistency:** Transactions maintain the **integrity constraints** of the database.
+- **Isolation:** Concurrent transactions do not interfere with each other.
+  - **Dirty Read:** A transaction reads uncommitted data.
+  - **Non-Repeatable Read:** A repeated read in the same transaction returns different results.
+  - **Phantom Reads:** Another transaction inserts/deletes rows while a transaction is running.
+- **Durability:** Once committed, **data changes persist even after failures.**
+
+5️⃣ Example: SQL Transaction for Money Transfer
+```sql
+DELIMITER //
+
+CREATE PROCEDURE transfer(
+    IN sender_id INT,
+    IN receiver_id INT,
+    IN amount DECIMAL(10,2)
+)
+BEGIN
+    DECLARE rollback_message VARCHAR(255) DEFAULT 'Transaction rolled back: Insufficient funds';
+    DECLARE commit_message VARCHAR(255) DEFAULT 'Transaction committed successfully';
+
+    START TRANSACTION;
+
+    UPDATE accounts SET balance = balance - amount WHERE account_id = sender_id;
+    UPDATE accounts SET balance = balance + amount WHERE account_id = receiver_id;
+
+    IF (SELECT balance FROM accounts WHERE account_id = sender_id) < 0 THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = rollback_message;
+    ELSE
+        INSERT INTO transactions (account_id, amount, transaction_type) VALUES (sender_id, -amount, 'WITHDRAWAL');
+        INSERT INTO transactions (account_id, amount, transaction_type) VALUES (receiver_id, amount, 'DEPOSIT');
+        COMMIT;
+        SELECT commit_message AS 'Result';
+    END IF;
+END //
+DELIMITER ;
+```
+
+6️⃣ Challenges with Relational Databases
+- **Schema evolution:** Difficult to handle changing data structures.
+- **Expensive joins:** Large-scale joins degrade performance.
+- **Semi-structured & unstructured data (JSON, XML).**
+- **Scalability:** Horizontal scaling is difficult for relational databases.
+- **Not ideal for real-time, low-latency applications.**
+
+7️⃣ Scaling Relational Databases
+- **Vertical Scaling (Scaling Up):** Add more CPU, RAM, and storage to a single machine.
+- **Horizontal Scaling (Scaling Out):** Distribute the database across multiple machines.
+- **Distributed computing solutions** improve scalability without extreme complexity.
+
+8️⃣ Introduction to Distributed Databases
+- **Definition:** A collection of independent computers that work together as one system.
+- **Characteristics:**
+  - Multiple nodes operate **concurrently**.
+  - Nodes **fail independently**.
+  - No shared **global clock**.
+
+9️⃣ Distributed Data Storage Models
+- **Distributed databases store data across multiple nodes.**
+- **Data replication:** Copies of data exist on multiple nodes for fault tolerance.
+- **Sharding:** Splitting large datasets across multiple nodes.
+- **Examples:**
+  - **Relational:** MySQL, PostgreSQL (support sharding and replication).
+  - **Newer relational systems:** CockroachDB.
+  - **NoSQL:** MongoDB, Cassandra, DynamoDB.
+
+🔟 CAP Theorem (Consistency, Availability, Partition Tolerance)
+- **It is impossible for a distributed system to provide all three guarantees simultaneously.**
+  - **Consistency (C):** Every read gets the latest write or an error.
+  - **Availability (A):** Every request gets a response (but not necessarily the latest data).
+  - **Partition Tolerance (P):** The system continues operating despite network failures.
+- **Trade-offs in CAP:** 
+  - **CA:** Strong consistency, but fails under network partitions.
+  - **CP:** Always consistent, but might sacrifice availability.
+  - **AP:** Always available, but may return outdated data.
+
+📌 Conclusion:
+- **Relational databases are powerful but not always ideal.**
+- **Distributed systems trade off CAP properties depending on use case.**
+- **Non-relational databases address limitations of SQL-based systems.**
+
+
+DS 4300 - Data Replication
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ Why Replicate Data?
+- **Scalability & High Throughput:** Handles growing data volume and read/write load.
+- **Fault Tolerance & High Availability:** Ensures applications continue working even if machines fail.
+- **Latency Reduction:** Improves response time for geographically distributed users.
+
+2️⃣ Challenges of Distributed Data
+- **Consistency:** Updates must be properly synchronized across replicas.
+- **Application Complexity:** Applications must manage distributed reads/writes.
+
+3️⃣ Scaling Architectures
+- **Vertical Scaling (Shared Memory):** Single powerful machine with hot-swappable components.
+- **Vertical Scaling (Shared Disk):** Multiple machines share a common storage, limited by write contention.
+- **Horizontal Scaling (Shared Nothing):** Each node has independent resources, enabling true distributed systems.
+
+4️⃣ Replication vs. Partitioning
+- **Replication:** Copies of the same data exist on multiple machines.
+- **Partitioning:** Divides data across multiple machines (each node holds only a subset).
+
+5️⃣ Common Replication Strategies
+- **Single Leader Model:** 
+  - All writes go to the **leader** node.
+  - **Leader sends updates to followers**.
+  - **Reads can be served by both leader and followers**.
+
+- **Multiple Leader Model:** 
+  - Multiple leaders handle writes, requiring conflict resolution.
+  - More complex, used in multi-region systems.
+
+- **Leaderless Model:** 
+  - No single leader; all nodes accept writes.
+  - Requires quorum-based consistency mechanisms.
+
+6️⃣ Leader-Based Replication (Most Common)
+- **Relational Databases:** MySQL, PostgreSQL, Oracle, SQL Server.
+- **NoSQL Databases:** MongoDB, RethinkDB, LinkedIn’s Espresso.
+- **Messaging Systems:** Kafka, RabbitMQ.
+
+7️⃣ How Replication Data is Transmitted
+- **Statement-Based Replication:** Sends SQL statements; prone to inconsistencies.
+- **Write-Ahead Log (WAL) Replication:** Logs all changes at byte-level; requires same storage engine.
+- **Logical (Row-Based) Replication:** Captures row-level changes; decouples from storage engine.
+- **Trigger-Based Replication:** Uses database triggers to log changes.
+
+8️⃣ Synchronous vs. Asynchronous Replication
+- **Synchronous:** Leader waits for followers to confirm before committing.
+  - ✅ Ensures strong consistency.
+  - ❌ Slower performance due to waiting.
+
+- **Asynchronous:** Leader commits instantly without waiting for followers.
+  - ✅ Higher availability & performance.
+  - ❌ Risk of temporary inconsistencies.
+
+9️⃣ Handling Leader Failures
+- **New Leader Selection:** 
+  - Nodes vote based on the most up-to-date data.
+  - A controller node may appoint a new leader.
+- **Challenges:** 
+  - Lost writes if replication was asynchronous.
+  - Avoiding split-brain scenarios (multiple active leaders).
+
+🔟 Replication Lag
+- **The delay between leader updates and follower synchronization.**
+- **Synchronous Replication:** Eliminates lag but slows down writes.
+- **Asynchronous Replication:** Increases availability but results in eventual consistency.
+
+📌 Read-After-Write Consistency
+- **Scenario:** A user adds a comment on a post and expects to see it immediately.
+- **Solutions:**
+  - **Read from leader for recently updated data.**
+  - **Dynamically route requests to leader within a time window.**
+
+📌 Monotonic Read Consistency
+- **Ensures users do not see older data after reading newer data.**
+- **Prevents read anomalies across distributed followers.**
+
+📌 Consistent Prefix Reads
+- **Ensures sequential writes appear in order for all readers.**
+- **Avoids scenarios where data appears out of order due to replication delays.**
+
+📌 Conclusion:
+- **Replication enhances scalability, availability, and fault tolerance.**
+- **Trade-offs exist between consistency and performance.**
+- **Strategies like read-after-write consistency mitigate common issues.**
+
+
+DS 4300 - NoSQL & Key-Value Databases
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ Distributed Databases and ACID - Pessimistic Concurrency
+- **ACID Transactions:** Focus on **data safety**, following strict rules.
+- **Pessimistic Concurrency:** Assumes **conflicts are likely**, locks resources until a transaction completes.
+  - Example: **Write Lock Analogy** – borrowing a book from the library prevents others from accessing it.
+
+2️⃣ Optimistic Concurrency
+- Transactions **do not lock data** but instead check for conflicts before committing.
+- Works well for **low-conflict systems** (e.g., backups, analytical databases).
+- **Implementation:** Use **timestamps & version numbers** to detect conflicts.
+- **High-conflict systems** may prefer a pessimistic locking model.
+
+3️⃣ Introduction to NoSQL
+- **"NoSQL" (Not Only SQL)** first used in **1998** by **Carlo Strozzi**.
+- Initially developed for handling **unstructured, web-based data**.
+- Often used to describe **non-relational databases**.
+
+4️⃣ CAP Theorem Review
+- **A distributed system can only provide two of three guarantees:**
+  - **Consistency (C):** All users see the same data instantly.
+  - **Availability (A):** System remains operational despite failures.
+  - **Partition Tolerance (P):** The system works despite network failures.
+
+- **Trade-offs:**
+  - **CA (Consistency + Availability):** No partition tolerance.
+  - **CP (Consistency + Partition Tolerance):** No availability in case of failure.
+  - **AP (Availability + Partition Tolerance):** No strong consistency.
+
+5️⃣ BASE Model (ACID Alternative)
+- **Basically Available:** Guarantees availability, but responses may be unreliable.
+- **Soft State:** System state may change over time even without input.
+- **Eventual Consistency:** Eventually, all nodes will agree on data values.
+
+6️⃣ Categories of NoSQL Databases
+- **Key-Value Stores (KV)**
+- **Document Stores**
+- **Column-Family Stores**
+- **Graph Databases**
+
+7️⃣ Key-Value Databases (KV Stores)
+- **Data Model:** Simple **key = value** pairs.
+- **Optimized for:**
+  - **Speed:** Uses in-memory hash tables, typically O(1) lookup.
+  - **Scalability:** Horizontally scalable, supports distributed environments.
+  - **Simplicity:** No complex queries or joins.
+
+8️⃣ Use Cases of KV Stores
+- **Data Science & ML:**
+  - **Experimentation & EDA Store:** Saves intermediate results.
+  - **Feature Store:** Low-latency retrieval for ML training & inference.
+  - **Model Monitoring:** Stores model performance metrics.
+
+- **Software Engineering (SWE):**
+  - **Session Management:** Fast storage/retrieval of user sessions.
+  - **User Profiles & Preferences:** Quick retrieval of user data.
+  - **Shopping Cart Data:** Persistent across devices and sessions.
+  - **Caching Layer:** Speeds up queries by reducing DB load.
+
+9️⃣ Redis - A Popular KV Database
+- **Redis (Remote Dictionary Server):** Open-source **in-memory** KV store.
+- **Supports:** Graphs, Spatial, Full-Text Search, Vectors, Time Series.
+- **Durability Mechanisms:**
+  - **Snapshot-based persistence.**
+  - **Append-only file (AOF) journaling.**
+
+🔟 Redis Data Types
+- **Keys:** Strings (can be any binary sequence).
+- **Values:** 
+  - **Strings**
+  - **Lists (Linked Lists)**
+  - **Sets (Unique, Unsorted Elements)**
+  - **Sorted Sets**
+  - **Hashes (Field → Value Pairs)**
+  - **Geospatial Data**
+
+📌 Setting Up Redis in Docker
+- **Pull & run the Redis image.**
+- **Expose port 6379 for connection.**
+- **Security Note:** Redis should not be exposed in production.
+
+📌 Connecting to Redis via DataGrip
+- **File > New > Data Source > Redis**
+- **Enter connection details & test connection.**
+
+📌 Redis Commands
+- **Basic Commands:**
+  ```
+  SET user:1 "John Doe"
+  GET user:1
+  DEL user:1
+  EXISTS user:1
+  KEYS user*
+  ```
+- **Increment & Decrement Counters:**
+  ```
+  INCR myCounter
+  INCRBY myCounter 10
+  DECR myCounter
+  DECRBY myCounter 5
+  ```
+
+📌 Redis Data Structures
+1. **Hashes (Key-Value Collections)**
+   - **Use Cases:** User profiles, session tracking, event logging.
+   - **Commands:**
+     ```
+     HSET bike:1 model "Demios" brand "Ergonom" price 1971
+     HGET bike:1 model
+     HGETALL bike:1
+     ```
+
+2. **Lists (Linked Lists)**
+   - **Use Cases:** Stacks, queues, social media feeds, logging systems.
+   - **Queue Example:**
+     ```
+     LPUSH tasks "Task1"
+     LPUSH tasks "Task2"
+     RPOP tasks
+     ```
+   - **Stack Example:**
+     ```
+     LPUSH stack "Item1"
+     LPOP stack
+     ```
+
+3. **Sets (Unique Collections)**
+   - **Use Cases:** User groups, unique visitor tracking, social networks.
+   - **Commands:**
+     ```
+     SADD students "Alice"
+     SADD students "Bob"
+     SCARD students
+     SISMEMBER students "Alice"
+     ```
+
+4. **JSON Support in Redis**
+   - Uses **JSONPath syntax** for navigation.
+   - Internally **stored in a tree-structure** for fast access.
+
+📌 Conclusion:
+- **NoSQL & Key-Value stores** trade off ACID guarantees for **scalability & performance**.
+- **Redis** is an in-memory KV store with high-speed operations.
+- **Different data types allow flexible storage of structured & semi-structured data.**
+
+
+DS 4300 - Redis + Python
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ Redis-Py: The Standard Python Client for Redis
+- **Maintained by the Redis Company**.
+- **Installation in DS4300 Conda Environment:**
+  ```bash
+  pip install redis
+  ```
+- **GitHub Repository:** [redis/redis-py](https://github.com/redis/redis-py)
+
+2️⃣ Connecting to Redis with Python
+- **Connection Parameters:**
+  - `host`: **localhost** or `127.0.0.1` (Docker deployment default).
+  - `port`: Default **6379** (unless mapped differently).
+  - `db`: Redis databases **0-15**.
+  - `decode_responses=True`: Converts bytes to strings.
+
+- **Example Python Code:**
+  ```python
+  import redis
+
+  redis_client = redis.Redis(
+      host='localhost',
+      port=6379,
+      db=2,
+      decode_responses=True
+  )
+  ```
+
+3️⃣ Redis Command List & Documentation
+- **Command Documentation:**
+  - [Redis Command Reference](https://redis.io/docs/latest/commands/)
+  - [Redis-Py Documentation](https://redis-py.readthedocs.io/en/stable/)
+
+4️⃣ String Commands in Redis-Py
+- **Basic Set/Get Operations:**
+  ```python
+  redis_client.set('clickCount:/abc', 0)
+  redis_client.incr('clickCount:/abc')
+  value = redis_client.get('clickCount:/abc')
+  print(f'Click count = {value}')
+  ```
+
+- **Multiple Key-Value Pairs:**
+  ```python
+  redis_client.mset({'key1': 'val1', 'key2': 'val2', 'key3': 'val3'})
+  values = redis_client.mget('key1', 'key2', 'key3')
+  print(values)  # Output: ['val1', 'val2', 'val3']
+  ```
+
+- **Additional String Commands:**
+  - `set()`, `mset()`, `setex()`, `msetnx()`, `setnx()`
+  - `get()`, `mget()`, `getex()`, `getdel()`
+  - `incr()`, `decr()`, `incrby()`, `decrby()`
+  - `strlen()`, `append()`
+
+5️⃣ List Commands in Redis-Py
+- **Creating & Retrieving Lists:**
+  ```python
+  redis_client.rpush('names', 'mark', 'sam', 'nick')
+  print(redis_client.lrange('names', 0, -1))  # Output: ['mark', 'sam', 'nick']
+  ```
+
+- **Additional List Commands:**
+  - `lpush()`, `lpop()`, `lset()`, `lrem()`
+  - `rpush()`, `rpop()`
+  - `lrange()`, `llen()`, `lpos()`
+
+6️⃣ Hash Commands in Redis-Py
+- **Creating & Retrieving Hashes:**
+  ```python
+  redis_client.hset('user-session:123', mapping={
+      'first': 'Sam',
+      'last': 'Uelle',
+      'company': 'Redis',
+      'age': 30
+  })
+  print(redis_client.hgetall('user-session:123'))
+  ```
+
+- **Additional Hash Commands:**
+  - `hset()`, `hget()`, `hgetall()`
+  - `hkeys()`
+  - `hdel()`, `hexists()`, `hlen()`, `hstrlen()`
+
+7️⃣ Redis Pipelines (Batch Processing)
+- **Reduce network overhead by executing multiple commands together.**
+
+- **Example:**
+  ```python
+  r = redis.Redis(decode_responses=True)
+  pipe = r.pipeline()
+
+  for i in range(5):
+      pipe.set(f"seat:{i}", f"#{i}")
+
+  set_5_result = pipe.execute()
+  print(set_5_result)  # Output: [True, True, True, True, True]
+
+  # Chained commands:
+  get_3_result = pipe.get("seat:0").get("seat:3").get("seat:4").execute()
+  print(get_3_result)  # Output: ['#0', '#3', '#4']
+  ```
+
+8️⃣ Redis in Machine Learning (ML)
+- **Common Use Cases:**
+  - Feature stores for **real-time ML pipelines**.
+  - Caching ML model predictions.
+  - Storing preprocessed data for fast retrieval.
+
+- **Further Reading:**
+  - [FeatureForm: Feature Stores Explained](https://www.featureform.com/post/feature-stores-explained-the-three-common-architectures)
+  - [MadeWithML: Feature Stores](https://madewithml.com/courses/mlops/feature-store/)
+
+📌 Conclusion:
+- **Redis-Py enables easy Python interaction with Redis databases.**
+- **Supports key-value storage, lists, hashes, and efficient pipelines.**
+- **Ideal for caching, session management, and ML feature stores.**
+
+
+DS 4300 - Document Databases & MongoDB
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ What is a Document Database?
+- A **non-relational database** that stores data as structured **documents** (typically **JSON**).
+- Designed to be **simple, flexible, and scalable**.
+
+2️⃣ Understanding JSON (JavaScript Object Notation)
+- **Lightweight** data-interchange format.
+- **Readable & easy to parse** by both humans and machines.
+- **Key Structures:**
+  - **Name/Value Pairs:** Objects, dictionaries, associative arrays.
+  - **Ordered Lists:** Arrays, lists, sequences.
+
+3️⃣ BSON (Binary JSON)
+- **Binary-encoded JSON format** with extended types (e.g., **Date, BinaryData**).
+- **Designed for document databases** (e.g., MongoDB).
+- **Efficient & lightweight** for faster traversal and storage.
+
+4️⃣ XML vs. JSON
+- **XML**: Predecessor to JSON, used in web pages, structured like HTML.
+- **JSON**: Simpler, more readable, and widely used for data exchange.
+
+5️⃣ Why Use Document Databases?
+- **Better alignment with Object-Oriented Programming (OOP)**.
+- Avoids the **impedance mismatch** between relational databases and object persistence.
+- **Schema flexibility**: Each document can have a different structure.
+- Ideal for **web applications, big data, and NoSQL architectures**.
+
+6️⃣ Introduction to MongoDB
+- **Launched in 2007** by former **DoubleClick engineers** to handle high ad-serving volumes.
+- **MongoDB Atlas (2016)**: Fully managed cloud-based document DB.
+
+7️⃣ MongoDB Structure
+- **Database → Collections → Documents** (instead of tables and rows).
+- **Collections:** Group related documents.
+- **Documents:** JSON/BSON objects with unique schemas.
+
+8️⃣ Relational vs. MongoDB
+| RDBMS    | MongoDB |
+|----------|---------|
+| Database | Database |
+| Table    | Collection |
+| Row      | Document |
+| Column   | Field |
+| Index    | Index |
+| Join     | Embedded Document |
+| Foreign Key | Reference |
+
+9️⃣ MongoDB Features
+- **Rich Query Support** (CRUD operations).
+- **Indexing** (Primary & Secondary indexes).
+- **Replication & Automatic Failover**.
+- **Built-in Load Balancing**.
+
+🔟 MongoDB Versions
+- **MongoDB Atlas**: Fully managed cloud version.
+- **MongoDB Enterprise**: Subscription-based, self-managed.
+- **MongoDB Community**: Free, open-source.
+
+📌 Interacting with MongoDB
+- **MongoDB Shell (`mongosh`)**: CLI tool for database interaction.
+- **MongoDB Compass**: GUI for managing MongoDB databases.
+- **Third-party tools**: DataGrip, NoSQLBooster, Robo 3T.
+- **Programming Libraries**: `PyMongo` (Python), `Mongoose` (Node.js).
+
+📌 MongoDB Community Edition in Docker
+- **Steps to Run MongoDB Locally:**
+  - Create a container with **port mapping (27017:27017)**.
+  - Set up **username/password authentication**.
+
+📌 MongoDB Compass (GUI)
+- **Install & connect to MongoDB instance.**
+- **Use Compass to visually explore & query data.**
+
+📌 Loading Sample Data (MFlix Dataset)
+- **Create a database:** `mflix`.
+- **Import JSON collections:** `users`, `theaters`, `movies`, `comments`.
+
+📌 Basic MongoDB Commands
+- **Creating a database & collection**
+  ```javascript
+  use mflix;
+  db.createCollection("users");
+  ```
+- **Querying documents (`find`)**
+  ```javascript
+  db.users.find();  // SELECT * FROM users;
+  db.users.find({"name": "Davos Seaworth"}); // WHERE name = "Davos Seaworth"
+  ```
+- **Filtering with conditions**
+  ```javascript
+  db.movies.find({rated: {$in: ["PG", "PG-13"]}}); // WHERE rated IN ('PG', 'PG-13')
+  ```
+- **Complex queries (AND, OR, comparisons)**
+  ```javascript
+  db.movies.find({
+      "year": 2010,
+      $or: [
+          {"awards.wins": {$gte: 5}},
+          {"genres": "Drama"}
+      ]
+  });
+  ```
+- **Counting documents**
+  ```javascript
+  db.movies.countDocuments({"year": 2010, "genres": "Drama"});
+  ```
+- **Projection (Selecting specific fields)**
+  ```javascript
+  db.movies.find({"year": 2010}, {"title": 1, "_id": 0});
+  ```
+
+📌 Using PyMongo (MongoDB with Python)
+- **Install PyMongo:**
+  ```bash
+  pip install pymongo
+  ```
+- **Connecting to MongoDB from Python**
+  ```python
+  from pymongo import MongoClient
+
+  client = MongoClient('mongodb://username:password@localhost:27017')
+  db = client['ds4300']
+  collection = db['myCollection']
+  ```
+- **Inserting a Document**
+  ```python
+  post = {
+      "author": "Mark",
+      "text": "MongoDB is Cool!",
+      "tags": ["mongodb", "python"]
+  }
+  post_id = collection.insert_one(post).inserted_id
+  print(post_id)
+  ```
+- **Counting Documents**
+  ```python
+  count = collection.count_documents({})
+  print(f"Total documents: {count}")
+  ```
+
+📌 Conclusion:
+- **MongoDB provides schema flexibility** compared to relational databases.
+- **Ideal for big data, NoSQL applications, and real-time analytics**.
+- **PyMongo simplifies integration with Python applications**.
+
+
+DS 4300 - MongoDB + PyMongo
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+1️⃣ What is PyMongo?
+- **PyMongo** is a Python library for interfacing with **MongoDB instances**.
+- Provides an easy-to-use **API for CRUD operations** on MongoDB.
+
+2️⃣ Connecting to MongoDB with PyMongo
+- **Install PyMongo:**
+  ```bash
+  pip install pymongo
+  ```
+- **Connect to a MongoDB instance:**
+  ```python
+  from pymongo import MongoClient
+
+  client = MongoClient('mongodb://user_name:pw@localhost:27017')
+  ```
+
+3️⃣ Getting a Database and Collection
+- **Retrieve a database & collection:**
+  ```python
+  db = client['ds4300']  # Equivalent to client.ds4300
+  collection = db['myCollection']  # Equivalent to db.myCollection
+  ```
+
+4️⃣ Inserting a Single Document
+- **Insert a new document into a collection:**
+  ```python
+  post = {
+      "author": "Mark",
+      "text": "MongoDB is Cool!",
+      "tags": ["mongodb", "python"]
+  }
+
+  post_id = collection.insert_one(post).inserted_id
+  print(post_id)
+  ```
+
+5️⃣ Finding All Movies from 2000
+- **Query MongoDB for all movies released in 2000:**
+  ```python
+  from bson.json_util import dumps
+
+  # Find all movies released in 2000
+  movies_2000 = db.movies.find({"year": 2000})
+
+  # Print results in readable JSON format
+  print(dumps(movies_2000, indent=2))
+  ```
+
+6️⃣ Setting Up Jupyter Lab for PyMongo
+- **Activate your DS4300 Conda or virtual Python environment.**
+- **Install required dependencies:**
+  ```bash
+  pip install pymongo jupyterlab
+  ```
+- **Download and unzip the MongoDB Jupyter Notebook files.**
+- **Navigate to the folder & start Jupyter Lab:**
+  ```bash
+  jupyter lab
+  ```
+
+📌 Conclusion:
+- **PyMongo simplifies MongoDB interactions with Python.**
+- **Supports database connections, document insertion, and querying.**
+- **Jupyter Lab is a useful tool for interactive MongoDB queries.**
+
+DS 4300 - Introduction to the Graph Data Model
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+📌 **What is a Graph Database?**
+- A **data model based on graphs**, consisting of **nodes** and **edges**.
+- **Nodes** (Vertices):
+  - Represent entities (e.g., people, places, objects).
+  - Each node is uniquely identified.
+  - Can have **properties** (e.g., name, occupation).
+- **Edges** (Relationships):
+  - Connect nodes to define relationships.
+  - Can also contain **properties**.
+- Supports **graph-oriented queries**, including:
+  - **Traversals** (navigating the graph).
+  - **Shortest path calculations**.
+  - **Network analysis**.
+
+📌 **Where Do Graphs Show Up?**
+- **Social Networks**:
+  - Instagram, Twitter, Facebook.
+  - Also used in **psychology and sociology** to model social interactions.
+- **The Web**:
+  - A massive graph of web pages (nodes) connected by hyperlinks (edges).
+- **Biological & Chemical Data**:
+  - **Genetics**, **systems biology**, **chemical reactions**.
+  - **Protein interaction networks**, **molecular bonding models**.
+
+📌 **Basics of Graph Theory**
+- **Graph = Nodes + Relationships (Edges).**
+- **Labeled Property Graph (LPG):**
+  - Nodes and edges can have **labels** (grouping nodes/edges into categories).
+  - **Properties** (key-value pairs) can exist on nodes and edges.
+  - **Nodes can exist without relationships** (but edges must connect nodes).
+
+📌 **Example Graph with Labels & Relationships**
+- **Labels:**
+  - **Person**
+  - **Car**
+- **Relationship Types:**
+  - **Drives**
+  - **Owns**
+  - **Lives_with**
+  - **Married_to**
+
+📌 **Graph Paths**
+- A **path** is an ordered sequence of nodes **connected by edges**.
+- **Valid Path Example:** `1 → 2 → 6 → 5`
+- **Invalid Path Example:** `1 → 2 → 6 → 2 → 3` (node repeats).
+
+📌 **Types of Graphs**
+- **Connected vs. Disconnected**:
+  - **Connected Graph**: There exists a path between any two nodes.
+  - **Disconnected Graph**: Some nodes are isolated.
+- **Weighted vs. Unweighted**:
+  - **Weighted Graph**: Edges have **weights** (e.g., distance, cost, time).
+  - **Unweighted Graph**: Edges have no associated weight.
+- **Directed vs. Undirected**:
+  - **Directed Graph**: Edges have a **direction** (e.g., follows, transfers money).
+  - **Undirected Graph**: Edges do not have a specific direction (e.g., mutual friendship).
+- **Cyclic vs. Acyclic**:
+  - **Cyclic Graph**: Contains at least one **cycle** (path returns to the starting node).
+  - **Acyclic Graph**: No cycles exist (e.g., a **tree**).
+- **Sparse vs. Dense Graphs**:
+  - **Sparse Graph**: Few edges relative to the number of nodes.
+  - **Dense Graph**: Many edges relative to the number of nodes.
+
+📌 **Tree Structures**
+- **A tree is a special type of graph** (a connected, acyclic, undirected graph).
+- Used in **hierarchical data structures** like:
+  - **File systems**
+  - **XML/JSON document parsing**
+  - **Decision trees**
+
+📌 **Types of Graph Algorithms**
+1️⃣ **Pathfinding Algorithms**:
+   - **Finds shortest paths between nodes.**
+   - **"Shortest"** can mean:
+     - Fewest edges.
+     - Lowest weight.
+   - Examples:
+     - **Dijkstra’s Algorithm** (single-source shortest path, weighted graphs).
+     - **A* Algorithm** (Dijkstra + heuristic guidance).
+     - **Minimum Spanning Tree**, **Cycle Detection**, **Max Flow/Min Cut**.
+
+2️⃣ **Centrality & Community Detection**:
+   - **Centrality**: Determines the most "important" nodes in a network.
+     - Example: **Social media influencers.**
+   - **Community Detection**: Identifies clusters and partitions in a graph.
+     - Helps understand **network structures & relationships**.
+
+📌 **Famous Graph Algorithms**
+- **Dijkstra’s Algorithm**: Finds the shortest path from a single source in weighted graphs.
+- **A* Algorithm**: Like Dijkstra, but uses heuristics to **optimize traversal**.
+- **PageRank**: Measures **node importance** based on incoming connections.
+
+📌 **Neo4j - A Graph Database System**
+- **NoSQL Graph Database** for **transactional & analytical graph-based queries**.
+- **Key Features:**
+  - **Schema-optional**: Schema can be enforced but is not required.
+  - **Supports Indexing** for performance optimization.
+  - **ACID Compliant** (like relational databases).
+  - **Distributed Computing Support** (scales well for large datasets).
+- **Alternatives:** Microsoft CosmosDB, Amazon Neptune.
+
+📌 **Conclusion**
+- **Graph databases excel in complex relationship modeling** (e.g., social networks, bioinformatics).
+- **Efficient querying of highly connected data**.
+- **Neo4j & other graph DBs provide powerful graph traversal and analytics tools**.
+
+
+DS 4300 - Neo4j (Graph Database)
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+📌 **What is Neo4j?**
+- A **Graph Database System** supporting **transactional & analytical processing** of graph-based data.
+- Part of a relatively new class of **NoSQL databases**.
+- **Key Features:**
+  - **Schema-optional** (flexibility in defining data models).
+  - **ACID-compliant** (ensures data integrity and reliability).
+  - **Supports indexing & distributed computing**.
+  - **Similar products:** Microsoft CosmosDB, Amazon Neptune.
+
+📌 **Neo4j Query Language & Plugins**
+1️⃣ **Cypher Query Language (CQL)**
+   - Created in **2011**, designed as an **SQL-equivalent for graphs**.
+   - Uses **pattern-matching** to express queries visually.
+     ```
+     (nodes)-[:CONNECT_TO]->(otherNodes)
+     ```
+
+2️⃣ **APOC Plugin (Awesome Procedures on Cypher)**
+   - Adds **hundreds of procedures & functions** to enhance Cypher capabilities.
+
+3️⃣ **Graph Data Science Plugin**
+   - Provides efficient implementations of **graph algorithms**.
+
+📌 **Neo4j Setup using Docker Compose**
+- **Docker Compose:** Manages **multi-container** setups declaratively using `docker-compose.yaml`.
+- **Benefits of Docker Compose:**
+  - **Environment consistency across machines**.
+  - **Simplifies deployment & scaling**.
+  - **Easier maintenance & service coordination**.
+
+📌 **Example Docker Compose File for Neo4j**
+```yaml
+services:
+  neo4j:
+    container_name: neo4j
+    image: neo4j:latest
+    ports:
+      - 7474:7474  # Web interface
+      - 7687:7687  # Bolt protocol for queries
+    environment:
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD}
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4J_PLUGINS=["apoc", "graph-data-science"]
+    volumes:
+      - ./neo4j_db/data:/data
+      - ./neo4j_db/logs:/logs
+      - ./neo4j_db/import:/var/lib/neo4j/import
+      - ./neo4j_db/plugins:/plugins
+```
+
+📌 **Environment Variables (`.env` Files)**
+- Store **passwords & environment settings** separately.
+- Example `.env` file:
+  ```
+  NEO4J_PASSWORD=abc123!!!
+  ```
+
+📌 **Useful Docker Commands**
+- **Check installation:** `docker --version`
+- **Start Neo4j container:** `docker compose up -d`
+- **Stop container:** `docker compose stop`
+- **Rebuild without cache:** `docker compose build --no-cache`
+
+📌 **Accessing the Neo4j Browser**
+- Open [http://localhost:7474](http://localhost:7474) in a browser.
+- Log in using **neo4j / your_password**.
+
+📌 **Basic Data Insertion in Neo4j (Cypher)**
+
+1️⃣ **Creating Nodes**
+```cypher
+CREATE (:User {name: "Alice", birthPlace: "Paris"})
+CREATE (:User {name: "Bob", birthPlace: "London"})
+CREATE (:User {name: "Carol", birthPlace: "London"})
+```
+
+2️⃣ **Creating Relationships**
+```cypher
+MATCH (alice:User {name: "Alice"}), (bob:User {name: "Bob"})
+CREATE (alice)-[:KNOWS {since: "2022-12-01"}]->(bob)
+```
+
+3️⃣ **Querying Data**
+```cypher
+MATCH (usr:User {birthPlace: "London"})
+RETURN usr.name, usr.birthPlace
+```
+
+📌 **Importing Data into Neo4j**
+
+1️⃣ **Download & Prepare Dataset**
+- Clone repo: [Graph-Data-Science-with-Neo4j](https://github.com/PacktPublishing/Graph-Data-Science-with-Neo4j)
+- Unzip `netflix.zip` and copy `netflix_titles.csv` to:
+  ```
+  neo4j_db/import/
+  ```
+
+2️⃣ **Basic CSV Import (Movies)**
+```cypher
+LOAD CSV WITH HEADERS FROM 'file:///netflix_titles.csv' AS line
+CREATE(:Movie {
+    id: line.show_id, 
+    title: line.title, 
+    releaseYear: line.release_year
+})
+```
+
+3️⃣ **Loading CSV with Directors**
+```cypher
+LOAD CSV WITH HEADERS FROM 'file:///netflix_titles.csv' AS line
+WITH split(line.director, ",") AS directors_list
+UNWIND directors_list AS director_name
+CREATE (:Person {name: trim(director_name)})
+```
+
+4️⃣ **Fixing Duplicate Nodes using `MERGE`**
+```cypher
+MATCH (p:Person) DELETE p
+
+LOAD CSV WITH HEADERS FROM 'file:///netflix_titles.csv' AS line
+WITH split(line.director, ",") AS directors_list
+UNWIND directors_list AS director_name
+MERGE (:Person {name: director_name})
+```
+
+5️⃣ **Adding Relationships (Directors → Movies)**
+```cypher
+LOAD CSV WITH HEADERS FROM 'file:///netflix_titles.csv' AS line
+MATCH (m:Movie {id: line.show_id})
+WITH m, split(line.director, ",") AS directors_list
+UNWIND directors_list AS director_name
+MATCH (p:Person {name: director_name})
+CREATE (p)-[:DIRECTED]->(m)
+```
+
+📌 **Verifying Data Import**
+```cypher
+MATCH (m:Movie {title: "Ray"})<-[:DIRECTED]-(p:Person)
+RETURN m, p
+```
+
+📌 **Conclusion**
+- **Neo4j is a powerful NoSQL graph database** for handling highly connected data.
+- **Cypher Query Language simplifies graph traversal & relationship queries**.
+- **Ideal for applications like social networks, fraud detection, and recommendation systems**.
+
+
+DS 4300 - AWS Introduction
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+📌 **What is AWS?**
+- **Amazon Web Services (AWS)** is the **leading cloud platform** with **200+ services**.
+- **Globally available** via data centers in multiple **regions & availability zones**.
+- **Pay-as-you-go pricing model** (cheaper than maintaining physical data centers).
+
+📌 **History of AWS**
+- Launched in **2006** with **S3 (Storage) & EC2 (Compute)**.
+- Expanded rapidly to include **RDS, DynamoDB, CloudWatch, Lambda**, and more.
+- **200+ services today** covering computing, databases, analytics, AI, and networking.
+
+📌 **Cloud Service Models**
+1️⃣ **IaaS (Infrastructure as a Service)**: Provides computing resources (e.g., EC2, S3, RDS).
+2️⃣ **PaaS (Platform as a Service)**: Fully managed environments for applications (e.g., AWS Lambda, Elastic Beanstalk).
+3️⃣ **SaaS (Software as a Service)**: Fully hosted applications (e.g., Gmail, Dropbox).
+
+📌 **AWS Shared Responsibility Model**
+- **AWS Manages:** Security **OF** the cloud (data centers, physical infrastructure, networking).
+- **Customer Manages:** Security **IN** the cloud (data encryption, IAM roles, access control).
+
+📌 **AWS Global Infrastructure**
+- **Regions**: Geographical areas (e.g., `us-east-1`, `us-west-1`).
+- **Availability Zones (AZs)**: Data centers **within regions** (each region has multiple AZs).
+- **Edge Locations**: Used for **CDNs** (CloudFront), caches content **closer to users**.
+
+📌 **AWS Core Services**
+1️⃣ **Compute Services**
+   - **EC2**: Virtual Machines (VMs) in the cloud.
+   - **ECS / EKS**: Managed containers (Docker, Kubernetes).
+   - **Lambda**: Serverless computing (auto-scales, event-driven).
+
+2️⃣ **Storage Services**
+   - **S3 (Simple Storage Service)**: Object storage.
+   - **EBS (Elastic Block Storage)**: Block storage for EC2.
+   - **EFS (Elastic File System)**: Managed file storage.
+
+3️⃣ **Database Services**
+   - **RDS**: Managed relational databases (MySQL, PostgreSQL, etc.).
+   - **DynamoDB**: Serverless NoSQL key-value store.
+   - **DocumentDB, ElastiCache, Neptune**: Managed NoSQL & caching.
+
+4️⃣ **Analytics & AI Services**
+   - **Athena**: Query data in S3 using SQL.
+   - **EMR**: Managed Hadoop, Spark.
+   - **Glue**: ETL & data catalog.
+   - **SageMaker**: Build & deploy machine learning models.
+
+📌 **AWS Free Tier**
+- **Free for 12 months** (limits apply):
+  - **EC2**: 750 hours/month.
+  - **S3**: 5GB storage.
+  - **RDS**: 750 hours of DB instance usage.
+
+📌 **Conclusion**
+- **AWS provides scalable computing, storage, and database solutions.**
+- **IaaS, PaaS, SaaS models allow flexibility in deployment.**
+- **Global infrastructure ensures high availability & performance.**
+
+
+DS 4300 - AWS EC2 & Lambda
+Instructor: Mark Fontenot, PhD
+Institution: Northeastern University
+
+📌 **Amazon EC2 - Elastic Compute Cloud**
+- **Scalable virtual machines** in the cloud.
+- **Many instance types** available (General Purpose, Compute-Optimized, GPU, etc.).
+- **Pay-as-you-go pricing**.
+
+📌 **EC2 Features**
+- **Elasticity**: Easily scale instances **up or down**.
+- **Prebuilt AMIs** or **custom AMIs** for pre-configured setups.
+- **Integration** with **S3, RDS, and other AWS services**.
+
+📌 **EC2 Lifecycle**
+- **Launch**: Start an instance with desired OS/configuration.
+- **Start/Stop**: Suspend usage while keeping data.
+- **Terminate**: Delete the instance permanently.
+- **Reboot**: Restart without data loss.
+
+📌 **EC2 Storage Options**
+1️⃣ **Instance Store**: High-speed but temporary storage (data is lost on reboot).
+2️⃣ **Elastic Block Store (EBS)**: Persistent block storage for EC2 instances.
+3️⃣ **Elastic File System (EFS)**: Managed shared file storage.
+4️⃣ **S3**: Long-term object storage for backups.
+
+📌 **Common EC2 Use Cases**
+- **Web Hosting**: Host websites & web apps.
+- **Data Processing**: Run custom data pipelines.
+- **Machine Learning**: Train ML models with **GPU instances**.
+- **Disaster Recovery**: Backup workloads in the cloud.
+
+📌 **Setting up an EC2 Instance**
+- **Choose an AMI** (e.g., Ubuntu, Amazon Linux).
+- **Select instance type** (CPU, RAM, disk, etc.).
+- **Configure security group** (firewall rules).
+- **Launch & connect via SSH.**
+
+📌 **AWS Lambda - Serverless Computing**
+- **Runs code without provisioning servers**.
+- **Event-driven execution** (triggered by events like S3 uploads, API Gateway, or DynamoDB changes).
+- **Auto-scales** based on incoming requests.
+- **Only pay for execution time** (not idle compute).
+
+📌 **Lambda Features**
+- **Supports Python, Java, Node.js, and more**.
+- **Integrates with other AWS services** (API Gateway, S3, DynamoDB, etc.).
+- **Highly scalable** - automatically adjusts to demand.
+
+📌 **How AWS Lambda Works**
+1️⃣ **Upload Code** via AWS Console, CLI, or SDK.
+2️⃣ **Configure Trigger** (e.g., HTTP request, file upload, database event).
+3️⃣ **Lambda Executes Code** when triggered.
+
+📌 **Creating a Lambda Function**
+- **Use AWS Console to create a new function.**
+- **Write code in Python/Node.js.**
+- **Deploy and test the function!**
+
+📌 **Example Lambda Function (Python)**
+```python
+import json
+
+def lambda_handler(event, context):
+    return {
+        'statusCode': 200,
+        'body': json.dumps("Hello from AWS Lambda!")
+    }
+```
+
+📌 **Conclusion**
+- **EC2 provides virtual machines for compute-heavy workloads.**
+- **Lambda is serverless, event-driven, and scales automatically.**
+- **AWS offers flexibility between VMs (EC2) and Functions-as-a-Service (Lambda).**
+

@@ -7,7 +7,7 @@ import faiss
 from sentence_transformers import SentenceTransformer
 import pickle
 
-# --- Configuration Parameters ---
+# Configuration Parameters
 INDEX_DIM = 384
 CHUNK_SIZE = 500      # Use 500 words per chunk
 OVERLAP = 50          # Overlap 50 words between chunks
@@ -22,7 +22,7 @@ faiss_metadata = []
 print(f"Loading embedding model: {EMBEDDING_MODEL_NAME}")
 embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
 
-# Stop words list (can be expanded as needed)
+# Stop words list
 STOP_WORDS = set([
     "a", "an", "the", "and", "or", "if", "in", "on", "with", "of", "at", "by", "for",
     "to", "from", "is", "are", "was", "were", "be", "been", "being"

@@ -9,24 +9,24 @@ import ollama
 from redis.commands.search.query import Query
 import argparse
 
-# === Global Configuration Variables ===
+# Global Configuration Variables
 USE_DATABASE = "Redis"  # Options: "Redis", "ChromaDB", "FAISS"
 EMBEDDING_BACKEND = "sentence-transformers"  # Options: "sentence-transformers", "ollama"
 
-# === Redis Configuration ===
+# Redis Configuration
 redis_client = redis.StrictRedis(host="localhost", port=6379, decode_responses=True)
 
-# === ChromaDB Configuration ===
+# ChromaDB Configuration
 chroma_client = chromadb.PersistentClient(path="./chroma_db")
 chroma_collection = chroma_client.get_or_create_collection("embeddings")
 
-# === FAISS Configuration ===
+# FAISS Configuration
 INDEX_DIM = 768
 faiss_index = faiss.IndexFlatL2(INDEX_DIM)
 faiss_vectors = []  # Should be populated during indexing
 faiss_metadata = []  # Corresponding metadata for each vector
 
-# === Embedding Model Global Variable and Cache ===
+# Embedding Model Global Variable and Cache
 embedding_model = None
 embedding_models_cache = {}  # Cache for SentenceTransformer models
 

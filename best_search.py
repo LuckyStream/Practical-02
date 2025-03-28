@@ -5,7 +5,7 @@ import argparse
 from sentence_transformers import SentenceTransformer
 import ollama
 
-# --- Global Configuration ---
+# Global Configuration
 INDEX_DIM = 384
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 FAISS_INDEX_PATH = "faiss_index.pkl"

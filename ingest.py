@@ -16,7 +16,7 @@ INDEX_NAME = "embedding_index"
 DOC_PREFIX = "doc:"
 DISTANCE_METRIC = "COSINE"
 
-# Stop words list (can be expanded as needed)
+# Stop words list
 STOP_WORDS = set([
     "a", "an", "the", "and", "or", "if", "in", "on", "with", "of", "at", "by", "for", 
     "to", "from", "is", "are", "was", "were", "be", "been", "being"

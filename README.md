@@ -102,7 +102,7 @@ python best_search.py
 ```bash
 python llm_comparison.ipynb
 ```
-- Visualize the difference of Mistral and Llama 3.2 by their speed 
+- Visualize the difference of Mistral and Llama 3.2 by their Avg Response score, Avg Query Time, and Avg Query Memory
 
 ## Team
 

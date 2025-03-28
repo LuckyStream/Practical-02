@@ -97,6 +97,12 @@ python best_search.py
 - After running, you can input a query to get a response from the local LLM.
 - Type **exit** to quit the search loop.
 
+### `llm_comparison.ipynb`
+
+```bash
+python llm_comparison.ipynb
+```
+- Visualize the difference of Mistral and Llama 3.2 by their speed 
 
 ## Team
 
